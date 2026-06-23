@@ -1,0 +1,124 @@
+{
+  "fieldRows": 512,
+  "fieldCols": 1024,
+  "bounds": {
+    "latMax": 85,
+    "latMin": -85,
+    "lonMin": -180,
+    "lonMax": 180
+  },
+  "scenarios": [
+    {
+      "id": "tohoku-2011",
+      "file": "/scenarios/tohoku-2011.bin",
+      "epicenter": {
+        "lat": 38.297,
+        "lon": 142.373
+      },
+      "epicenterCell": {
+        "lat": 38.2666015625,
+        "lon": 142.294921875
+      },
+      "coast": {
+        "label": "Sendai coast, Japan",
+        "lat": 38.26,
+        "lon": 141.04,
+        "arrivalMinutes": 69.4,
+        "distanceKm": 116
+      },
+      "maxMinutes": 3522
+    },
+    {
+      "id": "sumatra-2004",
+      "file": "/scenarios/sumatra-2004.bin",
+      "epicenter": {
+        "lat": 3.295,
+        "lon": 95.982
+      },
+      "epicenterCell": {
+        "lat": 3.2373046875,
+        "lon": 96.064453125
+      },
+      "coast": {
+        "label": "Banda Aceh, Indonesia",
+        "lat": 5.55,
+        "lon": 95.32,
+        "arrivalMinutes": 79.8,
+        "distanceKm": 261
+      },
+      "maxMinutes": 3975
+    },
+    {
+      "id": "chile-1960",
+      "file": "/scenarios/chile-1960.bin",
+      "epicenter": {
+        "lat": -38.143,
+        "lon": -73.407
+      },
+      "epicenterCell": {
+        "lat": -37.9345703125,
+        "lon": -73.564453125
+      },
+      "coast": {
+        "label": "Hilo, Hawai‘i",
+        "lat": 19.73,
+        "lon": -155.09,
+        "arrivalMinutes": 896.1,
+        "distanceKm": 10655
+      },
+      "maxMinutes": 3608
+    },
+    {
+      "id": "lisbon-1755",
+      "file": "/scenarios/lisbon-1755.bin",
+      "epicenter": {
+        "lat": 36,
+        "lon": -10.5
+      },
+      "epicenterCell": {
+        "lat": 35.9423828125,
+        "lon": -10.458984375
+      },
+      "coast": {
+        "label": "Lisbon, Portugal",
+        "lat": 38.71,
+        "lon": -9.14,
+        "arrivalMinutes": 39.6,
+        "distanceKm": 324
+      },
+      "maxMinutes": 3275
+    },
+    {
+      "id": "crete-365",
+      "file": "/scenarios/crete-365.bin",
+      "epicenter": {
+        "lat": 35,
+        "lon": 23
+      },
+      "epicenterCell": {
+        "lat": 34.9462890625,
+        "lon": 22.939453125
+      },
+      "coast": {
+        "label": "Alexandria, Egypt",
+        "lat": 31.2,
+        "lon": 29.92,
+        "arrivalMinutes": 142.9,
+        "distanceKm": 770
+      },
+      "maxMinutes": 3729
+    }
+  ],
+  "earth": {
+    "file": "/earth/bathymetry.bin",
+    "rows": 512,
+    "cols": 1024,
+    "bounds": {
+      "latMax": 85,
+      "latMin": -85,
+      "lonMin": -180,
+      "lonMax": 180
+    },
+    "dtype": "int16"
+  }
+}

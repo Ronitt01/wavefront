@@ -1,0 +1,11 @@
+{
+  "rows": 1024,
+  "cols": 2048,
+  "latMax": 85,
+  "latMin": -85,
+  "lonMin": -180,
+  "lonMax": 180,
+  "dtype": "int16",
+  "units": "meters",
+  "note": "elevation; ocean depth = -value"
+}

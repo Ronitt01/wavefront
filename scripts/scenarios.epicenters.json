@@ -1,0 +1,27 @@
+[
+  {
+    "id": "tohoku-2011",
+    "epicenter": { "lat": 38.297, "lon": 142.373 },
+    "coast": { "label": "Sendai coast, Japan", "lat": 38.26, "lon": 141.04 }
+  },
+  {
+    "id": "sumatra-2004",
+    "epicenter": { "lat": 3.295, "lon": 95.982 },
+    "coast": { "label": "Banda Aceh, Indonesia", "lat": 5.55, "lon": 95.32 }
+  },
+  {
+    "id": "chile-1960",
+    "epicenter": { "lat": -38.143, "lon": -73.407 },
+    "coast": { "label": "Hilo, Hawai‘i", "lat": 19.73, "lon": -155.09 }
+  },
+  {
+    "id": "lisbon-1755",
+    "epicenter": { "lat": 36.0, "lon": -10.5 },
+    "coast": { "label": "Lisbon, Portugal", "lat": 38.71, "lon": -9.14 }
+  },
+  {
+    "id": "crete-365",
+    "epicenter": { "lat": 35.0, "lon": 23.0 },
+    "coast": { "label": "Alexandria, Egypt", "lat": 31.2, "lon": 29.92 }
+  }
+]

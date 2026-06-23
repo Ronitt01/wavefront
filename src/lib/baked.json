@@ -1,0 +1,22 @@
+{
+  "tohoku-2011": {
+    "arrivalMinutes": 69.4,
+    "distanceKm": 116
+  },
+  "sumatra-2004": {
+    "arrivalMinutes": 79.8,
+    "distanceKm": 261
+  },
+  "chile-1960": {
+    "arrivalMinutes": 896.1,
+    "distanceKm": 10655
+  },
+  "lisbon-1755": {
+    "arrivalMinutes": 39.6,
+    "distanceKm": 324
+  },
+  "crete-365": {
+    "arrivalMinutes": 142.9,
+    "distanceKm": 770
+  }
+}
