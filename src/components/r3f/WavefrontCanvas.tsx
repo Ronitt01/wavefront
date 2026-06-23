@@ -22,15 +22,22 @@ function Scene({ scenarioId }: { scenarioId: string }) {
   } | null>(null);
 
   useEffect(() => {
-    let alive = true;
+    let cancelled = false;
     (async () => {
       const m = await loadManifest();
       const entry = m.scenarios.find((s) => s.id === scenarioId) ?? m.scenarios[0];
       const field = await loadFieldTexture(entry.file, m.fieldRows, m.fieldCols);
-      if (alive) setData({ entry, field, bounds: m.bounds });
+      if (cancelled) {
+        field.dispose(); // superseded/unmounted before handoff — free the GPU texture
+        return;
+      }
+      setData((prev) => {
+        if (prev && prev.field !== field) prev.field.dispose(); // free the outgoing one
+        return { entry, field, bounds: m.bounds };
+      });
     })();
     return () => {
-      alive = false;
+      cancelled = true;
     };
   }, [scenarioId]);
 
@@ -59,16 +66,18 @@ function Scene({ scenarioId }: { scenarioId: string }) {
 }
 
 export function WavefrontCanvas({ scenarioId = "chile-1960" }: { scenarioId?: string }) {
+  const isMobile =
+    typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
   return (
     <Canvas
       camera={{ position: [0, 0.35, 3.0], fov: 42 }}
-      gl={{ antialias: true, powerPreference: "high-performance" }}
-      dpr={[1, 2]}
+      gl={{ antialias: !isMobile, powerPreference: "high-performance" }}
+      dpr={isMobile ? [1, 1.5] : [1, 2]}
     >
       <color attach="background" args={["#03060d"]} />
       <Suspense fallback={null}>
         <Scene scenarioId={scenarioId} />
-        <Stars radius={300} depth={60} count={7000} factor={6} saturation={0} fade speed={0.6} />
+        <Stars radius={300} depth={60} count={isMobile ? 3500 : 7000} factor={6} saturation={0} fade speed={0.6} />
       </Suspense>
       <EffectComposer>
         <Bloom intensity={0.9} luminanceThreshold={0.55} luminanceSmoothing={0.2} mipmapBlur />

@@ -10,6 +10,9 @@ import { setScrollProgress } from "@/lib/scroll";
  */
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Respect reduced-motion: skip Lenis (native scroll still works; progress is
+    // measured from the window scroll listener in WavefrontExperience).
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const lenis = new Lenis({
       duration: 1.15,
       smoothWheel: true,

@@ -62,30 +62,35 @@ export function WavefrontExperience() {
   // Mirror the store into React state for the HUD.
   useEffect(() => onExperienceProgress(setProgress), []);
 
-  // Reset + fetch the brief once the wave lands.
+  // Reset the brief whenever the scenario changes.
   useEffect(() => {
     setBrief(null);
+    setBriefLoading(false);
   }, [scenarioId]);
 
+  // Fetch the brief once the wave lands — abort + id-guard against fast switching,
+  // so a slow response can never paint the wrong scenario's briefing.
   useEffect(() => {
     if (!hasLanded(progress) || brief || briefLoading) return;
+    const id = scenarioId;
+    const ctrl = new AbortController();
     setBriefLoading(true);
     fetch("/api/brief", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        scenarioId,
-        coastLabel: scenario.featuredCoast.label,
-        arrivalMinutes: arrival,
-        distanceKm: distance,
-        magnitude: scenario.magnitude,
-      }),
+      body: JSON.stringify({ scenarioId: id }),
+      signal: ctrl.signal,
     })
       .then((r) => r.json())
-      .then((d: BriefOutput) => setBrief(d))
+      .then((d: BriefOutput) => {
+        if (id === scenarioId) setBrief(d);
+      })
       .catch(() => {})
-      .finally(() => setBriefLoading(false));
-  }, [progress, brief, briefLoading, scenarioId, scenario, arrival, distance]);
+      .finally(() => {
+        if (id === scenarioId) setBriefLoading(false);
+      });
+    return () => ctrl.abort();
+  }, [progress, brief, briefLoading, scenarioId]);
 
   const ct = crossingT(progress);
   const elapsedMin = ct * arrival;
@@ -94,6 +99,11 @@ export function WavefrontExperience() {
 
   return (
     <section ref={sectionRef} className="relative h-[600vh]">
+      {/* Persistent page heading for assistive tech (visible title is decorative). */}
+      <h1 className="sr-only">
+        Wavefront — a visualization of how fast a tsunami crosses an ocean
+      </h1>
+
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* 3D */}
         <div className="absolute inset-0">
@@ -116,9 +126,12 @@ export function WavefrontExperience() {
               <p className="font-mono text-xs uppercase tracking-[0.35em] text-iso/80">
                 Preparedness visualization
               </p>
-              <h1 className="mt-3 font-display text-6xl font-semibold tracking-tight sm:text-8xl">
+              <div
+                aria-hidden="true"
+                className="mt-3 font-display text-6xl font-semibold tracking-tight sm:text-8xl"
+              >
                 Wavefront
-              </h1>
+              </div>
               <p className="mt-4 max-w-xl text-balance text-base text-muted sm:text-lg">
                 See how fast a tsunami crosses an ocean — and why your first
                 minutes decide everything.
@@ -126,6 +139,7 @@ export function WavefrontExperience() {
               <div className="mt-10 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-faint">
                 <span>Scroll to release the wave</span>
                 <motion.span
+                  aria-hidden="true"
                   animate={{ y: [0, 5, 0] }}
                   transition={{ repeat: Infinity, duration: 1.6 }}
                 >
@@ -173,6 +187,8 @@ export function WavefrontExperience() {
         <AnimatePresence>
           {landed && (
             <motion.div
+              role="status"
+              aria-live="polite"
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 24 }}
@@ -193,7 +209,9 @@ export function WavefrontExperience() {
                   <ul className="mt-3 space-y-1.5">
                     {brief.doNow.map((d, i) => (
                       <li key={i} className="flex gap-2 text-sm text-ink">
-                        <span className="text-safe">→</span>
+                        <span className="text-safe" aria-hidden="true">
+                          →
+                        </span>
                         <span>{d}</span>
                       </li>
                     ))}
@@ -207,12 +225,18 @@ export function WavefrontExperience() {
         </AnimatePresence>
 
         {/* Scenario picker */}
-        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-wrap justify-center gap-2 px-4">
+        <div
+          role="radiogroup"
+          aria-label="Choose a tsunami scenario"
+          className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-wrap justify-center gap-2 px-4"
+        >
           {SCENARIOS.map((s) => (
             <button
               key={s.id}
+              role="radio"
+              aria-checked={s.id === scenarioId}
               onClick={() => setScenarioId(s.id)}
-              className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition ${
+              className={`flex min-h-11 items-center rounded-full border px-4 py-2 font-mono text-xs uppercase tracking-wider transition ${
                 s.id === scenarioId
                   ? "border-iso/60 bg-iso/15 text-iso"
                   : "border-line bg-surface/40 text-muted hover:text-ink"

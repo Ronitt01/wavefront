@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, type ComponentPropsWithoutRef } from "react"
-import { useInView, useMotionValue, useSpring } from "motion/react"
+import { useInView, useMotionValue, useReducedMotion, useSpring } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -23,7 +23,10 @@ export function NumberTicker({
   ...props
 }: NumberTickerProps) {
   const ref = useRef<HTMLSpanElement>(null)
-  const motionValue = useMotionValue(direction === "down" ? value : startValue)
+  const reduced = useReducedMotion()
+  const motionValue = useMotionValue(
+    reduced ? value : direction === "down" ? value : startValue,
+  )
   const springValue = useSpring(motionValue, {
     damping: 60,
     stiffness: 100,
@@ -33,7 +36,7 @@ export function NumberTicker({
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null
 
-    if (isInView) {
+    if (isInView && !reduced) {
       timer = setTimeout(() => {
         motionValue.set(direction === "down" ? startValue : value)
       }, delay * 1000)
@@ -44,7 +47,7 @@ export function NumberTicker({
         clearTimeout(timer)
       }
     }
-  }, [motionValue, isInView, delay, value, direction, startValue])
+  }, [motionValue, isInView, delay, value, direction, startValue, reduced])
 
   useEffect(
     () =>
@@ -68,7 +71,7 @@ export function NumberTicker({
       )}
       {...props}
     >
-      {startValue}
+      {value}
     </span>
   )
 }

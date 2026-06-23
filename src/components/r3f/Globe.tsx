@@ -141,13 +141,15 @@ export function Globe({
 
   useFrame(() => {
     const p = getExperienceProgress();
-    const e = smoothstep(0, 1, crossingT(p));
+    const ctLin = crossingT(p);
+    const e = smoothstep(0, 1, ctLin);
 
     if (groupRef.current) {
       groupRef.current.quaternion.slerpQuaternions(qEpi, qCoast, e);
     }
     if (matRef.current) {
-      matRef.current.uniforms.uCurrentMin.value = e * entry.coast.arrivalMinutes;
+      // Ring time must equal the HUD clock exactly (linear) — easing only the camera.
+      matRef.current.uniforms.uCurrentMin.value = ctLin * entry.coast.arrivalMinutes;
       matRef.current.uniforms.uCamDir.value.copy(camera.position).normalize();
     }
     // gentle cinematic push-in toward landfall
@@ -158,7 +160,7 @@ export function Globe({
   return (
     <group ref={groupRef}>
       <mesh>
-        <sphereGeometry args={[1, 160, 160]} />
+        <sphereGeometry args={[1, 128, 128]} />
         <shaderMaterial ref={matRef} vertexShader={vertex} fragmentShader={fragment} uniforms={uniforms} />
       </mesh>
       <Marker lat={entry.epicenter.lat} lon={entry.epicenter.lon} color="#ff5a3c" size={0.012} />
