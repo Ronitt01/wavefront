@@ -38,6 +38,12 @@ export function WavefrontExperience() {
   const arrival = BAKED[scenarioId]?.arrivalMinutes ?? 0;
   const distance = BAKED[scenarioId]?.distanceKm ?? 0;
 
+  const fetchedForRef = useRef<string | null>(null);
+  const ct = crossingT(progress);
+  const elapsedMin = ct * arrival;
+  const landed = hasLanded(progress);
+  const started = progress > ACTS.introEnd * 0.5;
+
   // Map page scroll -> local experience progress (0..1 across this section).
   useEffect(() => {
     const measure = () => {
@@ -68,10 +74,13 @@ export function WavefrontExperience() {
     setBriefLoading(false);
   }, [scenarioId]);
 
-  // Fetch the brief once the wave lands — abort + id-guard against fast switching,
-  // so a slow response can never paint the wrong scenario's briefing.
+  // Fetch the brief exactly once per scenario, the first time the wave lands.
+  // Keyed on the `landed` boolean (not raw progress) + a ref guard, so scroll
+  // frames don't re-trigger/abort it. id-guard prevents a stale response from
+  // painting the wrong scenario's briefing.
   useEffect(() => {
-    if (!hasLanded(progress) || brief || briefLoading) return;
+    if (!landed || fetchedForRef.current === scenarioId) return;
+    fetchedForRef.current = scenarioId;
     const id = scenarioId;
     const ctrl = new AbortController();
     setBriefLoading(true);
@@ -90,12 +99,7 @@ export function WavefrontExperience() {
         if (id === scenarioId) setBriefLoading(false);
       });
     return () => ctrl.abort();
-  }, [progress, brief, briefLoading, scenarioId]);
-
-  const ct = crossingT(progress);
-  const elapsedMin = ct * arrival;
-  const landed = hasLanded(progress);
-  const started = progress > ACTS.introEnd * 0.5;
+  }, [landed, scenarioId]);
 
   return (
     <section ref={sectionRef} className="relative h-[600vh]">
